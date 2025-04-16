@@ -57,6 +57,10 @@ st.markdown("""
         background-color: #008CBA;
         color: white;
     }
+    .warning {
+        color: #ff0000;
+        font-weight: bold;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -65,6 +69,8 @@ if 'vectors' not in st.session_state:
     st.session_state.vectors = None
 if 'processed' not in st.session_state:
     st.session_state.processed = False
+if 'allergies' not in st.session_state:
+    st.session_state.allergies = ""
 
 # LLM setup
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="Llama3-8b-8192")
@@ -95,29 +101,30 @@ def analyze_image(query, image_path, language):
     except Exception as e:
         return f"Could not analyze image: {str(e)}"
 
-# Updated prompt template with multilingual support
-def get_prompt_template(language):
-    return ChatPromptTemplate.from_template(f"""
+# Updated prompt template with allergy checking
+def get_prompt_template():
+    return ChatPromptTemplate.from_template("""
 You are a professional medical assistant. Based on the provided context, identify the most relevant doctor for the given symptoms. 
-Provide a medical assessment, suggested medicines prescribed by the doctor, and any applicable home remedies related to the condition. 
+Provide a medical assessment, suggested medicines prescribed by the doctor (excluding any the patient is allergic to), and any applicable home remedies related to the condition. 
 Respond in {language} language. Use simple, patient-friendly language while maintaining medical accuracy.
 
-Context:
-{{context}}
+Patient Allergies: {allergies}
 
-Symptoms: {{input}}
+Context:
+{context}
+
+Symptoms: {input}
 
 Answer in markdown format with:
 - **Doctor Recommendation**
 - **Medical Assessment**
-- **Suggested Medicines**
+- **Suggested Medicines** (clearly state if none due to allergies)
 - **Home Remedies**
 """)
 
 # Load and process static JSON data
 def load_and_process_json():
-    # Load your static JSON data (replace with your actual data path)
-    data = [
+    data =[
     {
       "id": "01",
       "name": "Dr. Alfaz Ahmed",
@@ -262,11 +269,12 @@ def load_and_process_json():
       "medicines": ["Tamsulosin", "Finasteride", "Ciprofloxacin", "Amoxicillin", "Ibuprofen"]
     }
 ]
+
+    
     st.session_state.doctors_data = data
-    # Convert JSON data to LangChain documents
     documents = [
         Document(
-            page_content=item["prescription"],  # Use prescription as main content
+            page_content=item["prescription"],
             metadata={
                 "name": item["name"],
                 "specialization": item["specialization"],
@@ -276,11 +284,9 @@ def load_and_process_json():
         ) for item in data
     ]
     
-    # Split documents
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     split_documents = text_splitter.split_documents(documents)
     
-    # Create embeddings and vector store
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     st.session_state.vectors = FAISS.from_documents(split_documents, embeddings)
     st.session_state.processed = True
@@ -299,7 +305,6 @@ def speak_text(text, lang_code):
         st.audio(audio_file.read(), format="audio/mp3")
     os.remove(filename)
 
-
 def transcribe_audio(audio_bytes):
     model = whisper.load_model("base")
     with tempfile.NamedTemporaryFile(suffix=".mp3") as fp:
@@ -314,6 +319,12 @@ st.markdown("Describe your symptoms via voice or text to get specialist recommen
 with st.sidebar:
     selected_language = st.selectbox("Select Language", list(LANGUAGE_MAP.keys()))
     lang_code = LANGUAGE_MAP[selected_language]
+    
+    # Allergy input
+    st.session_state.allergies = st.text_input(
+        "List any medicine allergies (comma-separated):",
+        help="Example: Penicillin, Ibuprofen, Aspirin"
+    )
     
     # Image uploader
     uploaded_image = st.file_uploader("Upload Medical Image", type=["jpg", "jpeg", "png"])
@@ -331,6 +342,7 @@ if uploaded_image:
         st.markdown("### 🖼️ Image Analysis")
         st.markdown(image_analysis)
         speak_text(image_analysis, lang_code)
+
 # Audio + Text input
 audio = mic_recorder.mic_recorder(
     start_prompt="🎙️ Click to record symptoms",
@@ -362,25 +374,34 @@ if not question and typed_question:
 # Process question
 if question and st.session_state.processed:
     start_time = time.time()
-    prompt = get_prompt_template(selected_language)
+    
+    # Get allergy information
+    allergies = st.session_state.allergies.strip() or "No known allergies"
+    
+    # Create chain
+    prompt = get_prompt_template()
     document_chain = create_stuff_documents_chain(llm, prompt)
     retriever = st.session_state.vectors.as_retriever()
     retrieval_chain = create_retrieval_chain(retriever, document_chain)
-    response = retrieval_chain.invoke({'input': question})
+    
+    # Invoke chain with allergy information
+    response = retrieval_chain.invoke({
+        'input': question,
+        'language': selected_language,
+        'allergies': allergies
+    })
+    
     processing_time = time.time() - start_time
     
     # Display answer
     st.markdown("### 🩺 Recommendation")
     st.markdown(response['answer'])
-    speak_text(response['answer'], lang_code)  
+    speak_text(response['answer'], lang_code)
 
-    # Display detailed doctor information from JSON data
+    # Display detailed doctor information with allergy filtering
     if response['context']:
         try:
-            # Get recommended specialization from top match
             top_specialization = response['context'][0].metadata['specialization']
-            
-            # Find matching doctors in original data
             matched_doctors = [
                 doc for doc in st.session_state.doctors_data
                 if doc['specialization'] == top_specialization
@@ -388,8 +409,21 @@ if question and st.session_state.processed:
             
             if matched_doctors:
                 st.markdown("### 👨⚕️ Recommended Specialist Details")
+                
+                # Process allergies for filtering
+                allergy_list = [a.strip().lower() for a in st.session_state.allergies.split(',') if a.strip()]
+                
                 for doctor in matched_doctors:
-                    # Create columns for better layout
+                    # Filter medicines
+                    if allergy_list:
+                        filtered_meds = [
+                            med for med in doctor['medicines']
+                            if med.strip().lower() not in allergy_list
+                        ]
+                    else:
+                        filtered_meds = doctor['medicines']
+                    
+                    # Create columns for layout
                     col1, col2 = st.columns([1, 3])
                     
                     with col1:
@@ -400,8 +434,13 @@ if question and st.session_state.processed:
                         st.write(f"👥 **Patients Treated:** {doctor['totalPatients']}")
                     
                     with col2:
-                        st.markdown("**Common Prescriptions:**")
-                        st.write(", ".join(doctor['medicines']) or "None listed")
+                        st.markdown("**Approved Medicines:**")
+                        if filtered_meds:
+                            st.write(", ".join(filtered_meds))
+                        else:
+                            st.markdown("<div class='warning'>No safe medications available due to allergies</div>", 
+                                      unsafe_allow_html=True)
+                        
                         st.markdown("**Typical Prescription Guidelines:**")
                         st.info(doctor['prescription'])
                     
@@ -416,7 +455,6 @@ if question and st.session_state.processed:
             st.write(f"**Name:** {doc.metadata['name']}")
             st.write(f"**Specialization:** {doc.metadata['specialization']}")
             st.write(f"**Hospital:** {doc.metadata['hospital']}")
-            st.write(f"**Common Medicines:** {doc.metadata['medicines']}")
             st.markdown("---")
 
     st.caption(f"Processed in {processing_time:.2f} seconds")

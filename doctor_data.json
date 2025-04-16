@@ -1,0 +1,145 @@
+[
+    {
+      "id": "01",
+      "name": "Dr. Alfaz Ahmed",
+      "specialization": "Surgeon",
+      "avgRating": 4.9,
+      "totalRating": 272,
+      "totalPatients": 1200,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "Consult a surgeon if you have symptoms like severe abdominal pain, broken bones, deep cuts, or need surgical intervention for any organ-related issues.",
+      "medicines": ["Ibuprofen", "Paracetamol", "Morphine", "Antibiotics (Amoxicillin)", "Lidocaine (for local anesthesia)"]
+    },
+    {
+      "id": "02",
+      "name": "Dr. Saleh Mahmud",
+      "specialization": "Neurologist",
+      "avgRating": 4.8,
+      "totalRating": 272,
+      "totalPatients": 1678,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "Visit a neurologist if you experience symptoms like frequent headaches, dizziness, blurred vision, memory problems, numbness, or seizures.",
+      "medicines": ["Diazepam", "Topiramate", "Gabapentin", "Carbamazepine", "Levetiracetam"]
+    },
+    {
+      "id": "03",
+      "name": "Dr. Farid Uddin",
+      "specialization": "Dermatologist",
+      "avgRating": 4.8,
+      "totalRating": 272,
+      "totalPatients": 986,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "A dermatologist should be consulted for skin-related concerns such as rashes, acne, eczema, psoriasis, or if you notice unusual moles or skin changes.",
+      "medicines": ["Tretinoin", "Hydrocortisone", "Clindamycin", "Benzoyl Peroxide", "Antihistamines (Cetirizine)"]
+    },
+    {
+      "id": "04",
+      "name": "Dr. Vikram Singhania",
+      "specialization": "Cardiologist",
+      "avgRating": 4.8,
+      "totalRating": 272,
+      "totalPatients": 1803,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "Consult a cardiologist if you have symptoms like chest pain, shortness of breath, irregular heartbeat, swelling in legs, or fatigue during physical activity.",
+      "medicines": ["Aspirin", "Atorvastatin", "Beta-blockers (Metoprolol)", "ACE inhibitors (Lisinopril)", "Nitroglycerin"]
+    },
+    {
+      "id": "05",
+      "name": "Dr. Anand Khanna",
+      "specialization": "Psychiatrist",
+      "avgRating": 4.8,
+      "totalRating": 272,
+      "totalPatients": 1298,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "A psychiatrist should be consulted if you're experiencing symptoms like anxiety, depression, mood swings, excessive worry, or mental health issues affecting daily life.",
+      "medicines": ["Sertraline", "Fluoxetine", "Lorazepam", "Citalopram", "Quetiapine"]
+    },
+    {
+      "id": "06",
+      "name": "Dr. Kavita Gupta",
+      "specialization": "Ophthalmologist",
+      "avgRating": 4.8,
+      "totalRating": 272,
+      "totalPatients": 1291,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "Consult an ophthalmologist if you have symptoms such as eye pain, blurred vision, double vision, excessive tearing, or difficulty seeing clearly.",
+      "medicines": ["Latanoprost (for glaucoma)", "Artificial tears", "Prednisolone acetate", "Tobramycin (antibiotic eye drops)", "Cyclopentolate (for pupil dilation)"]
+    },
+    {
+      "id": "07",
+      "name": "Dr. Priya Patel",
+      "specialization": "Pediatrician",
+      "avgRating": 4.8,
+      "totalRating": 272,
+      "totalPatients": 1382,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "Visit a pediatrician if your child experiences fever, difficulty breathing, developmental delays, persistent coughing, or any issues related to their growth and development.",
+      "medicines": ["Paracetamol", "Amoxicillin", "Diphenhydramine", "Salbutamol (for asthma)", "Ibuprofen"]
+    },
+    {
+      "id": "08",
+      "name": "Dr. Suman Verma",
+      "specialization": "Endocrinologist",
+      "avgRating": 4.8,
+      "totalRating": 272,
+      "totalPatients": 784,
+      "hospital": "Mount Adora Hospital, Sylhet.",
+      "prescription": "An endocrinologist should be consulted for symptoms such as weight gain or loss, unexplained fatigue, changes in appetite, or issues related to thyroid, diabetes, or hormonal imbalances.",
+      "medicines": ["Levothyroxine (for hypothyroidism)", "Metformin (for diabetes)", "Insulin", "Prednisone (for adrenal insufficiency)", "Fludrocortisone"]
+    },
+    {
+      "id": "09",
+      "name": "Dr. Nisha Mehta",
+      "specialization": "Gynecologist",
+      "avgRating": 4.7,
+      "totalRating": 200,
+      "totalPatients": 1500,
+      "hospital": "Green Valley Hospital, Dhaka.",
+      "prescription": "Consult a gynecologist if you have symptoms like irregular periods, pelvic pain, abnormal bleeding, or reproductive health concerns.",
+      "medicines": ["Contraceptive pills", "Progesterone", "Metformin (for PCOS)", "Paracetamol", "Hormone replacement therapy"]
+    },
+    {
+      "id": "10",
+      "name": "Dr. Arun Kumar",
+      "specialization": "Orthopedic",
+      "avgRating": 4.9,
+      "totalRating": 310,
+      "totalPatients": 2200,
+      "hospital": "Orthopedic Care Center, Dhaka.",
+      "prescription": "Visit an orthopedic specialist if you experience symptoms such as joint pain, fractures, arthritis, or any musculoskeletal injuries.",
+      "medicines": ["Ibuprofen", "Paracetamol", "Methotrexate (for arthritis)", "Calcium and Vitamin D", "Tramadol"]
+    },
+    {
+      "id": "11",
+      "name": "Dr. Ramesh Sharma",
+      "specialization": "Gastroenterologist",
+      "avgRating": 4.6,
+      "totalRating": 180,
+      "totalPatients": 900,
+      "hospital": "City Medical Hospital, Dhaka.",
+      "prescription": "Consult a gastroenterologist for symptoms like chronic stomach pain, indigestion, acid reflux, nausea, or abnormal bowel movements.",
+      "medicines": ["Pantoprazole", "Loperamide", "Metoclopramide", "Rifaximin", "Antacids"]
+    },
+    {
+      "id": "12",
+      "name": "Dr. Tanvi Sharma",
+      "specialization": "Radiologist",
+      "avgRating": 4.7,
+      "totalRating": 260,
+      "totalPatients": 1400,
+      "hospital": "Radiology Imaging Center, Dhaka.",
+      "prescription": "Consult a radiologist for imaging services such as X-rays, CT scans, MRIs, or ultrasound for diagnostic purposes related to various health issues.",
+      "medicines": []
+    },
+    {
+      "id": "13",
+      "name": "Dr. Rajesh Kumar",
+      "specialization": "Urologist",
+      "avgRating": 4.8,
+      "totalRating": 250,
+      "totalPatients": 1100,
+      "hospital": "Metro Urology Clinic, Dhaka.",
+      "prescription": "Visit a urologist for symptoms like urinary tract infections, kidney stones, frequent urination, or issues related to the bladder or prostate.",
+      "medicines": ["Tamsulosin", "Finasteride", "Ciprofloxacin", "Amoxicillin", "Ibuprofen"]
+    }
+]
