@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import uuid
@@ -22,9 +22,8 @@ from groq import Groq
 
 load_dotenv()
 
-
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 # Initialize components
 groq_api_key = os.getenv('GROQ_API_KEY')
@@ -47,7 +46,6 @@ def initialize_system():
       "id": "01",
       "name": "Dr. Alfaz Ahmed",
       "specialization": "Surgeon",
-      "phone": "+919665669141",
       "avgRating": 4.9,
       "totalRating": 272,
       "totalPatients": 1200,
@@ -59,7 +57,6 @@ def initialize_system():
       "id": "02",
       "name": "Dr. Saleh Mahmud",
       "specialization": "Neurologist",
-      "phone": "+919665669141",
       "avgRating": 4.8,
       "totalRating": 272,
       "totalPatients": 1678,
@@ -71,7 +68,6 @@ def initialize_system():
       "id": "03",
       "name": "Dr. Farid Uddin",
       "specialization": "Dermatologist",
-      "phone": "+919665669141",
       "avgRating": 4.8,
       "totalRating": 272,
       "totalPatients": 986,
@@ -83,7 +79,6 @@ def initialize_system():
       "id": "04",
       "name": "Dr. Vikram Singhania",
       "specialization": "Cardiologist",
-      "phone": "+919665669141",
       "avgRating": 4.8,
       "totalRating": 272,
       "totalPatients": 1803,
@@ -94,8 +89,7 @@ def initialize_system():
     {
       "id": "05",
       "name": "Dr. Anand Khanna",
-      "specialization": "Psychiatrist","phone": "+919665669141",
-
+      "specialization": "Psychiatrist",
       "avgRating": 4.8,
       "totalRating": 272,
       "totalPatients": 1298,
@@ -107,7 +101,6 @@ def initialize_system():
       "id": "06",
       "name": "Dr. Kavita Gupta",
       "specialization": "Ophthalmologist",
-      "phone": "+919665669141",
       "avgRating": 4.8,
       "totalRating": 272,
       "totalPatients": 1291,
@@ -119,7 +112,6 @@ def initialize_system():
       "id": "07",
       "name": "Dr. Priya Patel",
       "specialization": "Pediatrician",
-      "phone": "+919665669141",
       "avgRating": 4.8,
       "totalRating": 272,
       "totalPatients": 1382,
@@ -131,7 +123,6 @@ def initialize_system():
       "id": "08",
       "name": "Dr. Suman Verma",
       "specialization": "Endocrinologist",
-      "phone": "+919665669141",
       "avgRating": 4.8,
       "totalRating": 272,
       "totalPatients": 784,
@@ -143,7 +134,6 @@ def initialize_system():
       "id": "09",
       "name": "Dr. Nisha Mehta",
       "specialization": "Gynecologist",
-      "phone": "+919665669141",
       "avgRating": 4.7,
       "totalRating": 200,
       "totalPatients": 1500,
@@ -155,7 +145,6 @@ def initialize_system():
       "id": "10",
       "name": "Dr. Arun Kumar",
       "specialization": "Orthopedic",
-      "phone": "+919665669141",
       "avgRating": 4.9,
       "totalRating": 310,
       "totalPatients": 2200,
@@ -167,7 +156,6 @@ def initialize_system():
       "id": "11",
       "name": "Dr. Ramesh Sharma",
       "specialization": "Gastroenterologist",
-      "phone": "+919665669141",
       "avgRating": 4.6,
       "totalRating": 180,
       "totalPatients": 900,
@@ -179,7 +167,6 @@ def initialize_system():
       "id": "12",
       "name": "Dr. Tanvi Sharma",
       "specialization": "Radiologist",
-      "phone": "+919665669141",
       "avgRating": 4.7,
       "totalRating": 260,
       "totalPatients": 1400,
@@ -191,7 +178,6 @@ def initialize_system():
       "id": "13",
       "name": "Dr. Rajesh Kumar",
       "specialization": "Urologist",
-      "phone": "+919665669141",
       "avgRating": 4.8,
       "totalRating": 250,
       "totalPatients": 1100,
@@ -305,7 +291,6 @@ def process_response(response, language, allergies):
                     "specialization": doctor['specialization'],
                     "hospital": doctor['hospital'],
                     "rating": doctor['avgRating'],
-                    "phone": doctor['phone'],
                     "patients": doctor['totalPatients'],
                     "medicines": filtered_meds,
                     "prescription": doctor['prescription']
@@ -326,10 +311,8 @@ def analyze_image():
             return jsonify({"error": "No image provided"}), 400
             
         image_file = request.files['image']
-        query = request.form.get('query', '')  # Get query from unified input
+        query = request.form.get('query', '')
         language = request.form.get('language', 'English')
-
-        # ... rest of the function remains same ...
 
         with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
             image_file.save(tmp_file.name)
@@ -356,35 +339,7 @@ def analyze_image():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-@app.route('/text-to-speech', methods=['POST'])
-def text_to_speech():
-    try:
-        data = request.json
-        text = data.get('text', '')
-        lang = data.get('lang', 'en')  # Directly use the language code from frontend
 
-        if not text:
-            return jsonify({"error": "No text provided"}), 400
-
-        # Generate speech using gTTS in memory
-        tts = gTTS(text=text, lang=lang)
-        audio_buffer = BytesIO()
-        tts.write_to_fp(audio_buffer)
-        audio_buffer.seek(0)
-
-        return send_file(
-            audio_buffer,
-            mimetype="audio/mpeg",
-            as_attachment=False,
-            download_name="speech.mp3"
-        )
-
-    except Exception as e:
-        app.logger.error(f"Text-to-speech error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 def transcribe_audio(audio_bytes):
     try:
         wav_audio = BytesIO(audio_bytes)
